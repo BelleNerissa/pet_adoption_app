@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pet_shop_app_01/const.dart';
 import 'package:pet_shop_app_01/models/onboards_model.dart';
-import 'package:pet_shop_app_01/pages/home.dart';
+import 'package:pet_shop_app_01/pages/login.dart';
 
 class OnBoardPage extends StatefulWidget {
   const OnBoardPage({Key? key}) : super(key: key);
@@ -15,63 +15,77 @@ class _OnBoardPageState extends State<OnBoardPage> {
   int currentPage = 0;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: white,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            height: MediaQuery.of(context).size.height * 0.75,
-            color: white,
-            child: PageView.builder(
-                onPageChanged: (value) {
-                  setState(() {
-                    currentPage = value;
-                  });
-                },
-                itemCount: onBoardData.length,
-                itemBuilder: (context, index) => OnBoardContent(
-                      onBoard: onBoardData[index],
-                    )),
-          ),
-          GestureDetector(
-            onTap: () {
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const HomePage()),
-                  (route) => false);
-            },
-            child: Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width * 0.6,
-                decoration: BoxDecoration(
-                    color: blue,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: const [
-                      BoxShadow(
-                          offset: Offset(0, 3),
-                          color: blue,
-                          spreadRadius: 0,
-                          blurRadius: 5)
-                    ]),
-                child: Center(
-                  child: Text(
-                    currentPage == onBoardData.length - 1
-                        ? 'Get Started'
-                        : 'Continue',
-                    style: poppins.copyWith(color: white, fontSize: 16),
-                  ),
-                )),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ...List.generate(
-                  onBoardData.length, (index) => indicator(index: index))
-            ],
-          )
-        ],
+    return WillPopScope(
+      onWillPop: () async {
+        if (currentPage == 0) {
+          // Se estiver na primeira página, permita o fechamento do aplicativo
+          return true;
+        } else {
+          // Se não estiver na primeira página, volte para a página anterior
+          setState(() {
+            currentPage--;
+          });
+          return false;
+        }
+      },
+      child: Scaffold(
+        backgroundColor: white,
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              height: MediaQuery.of(context).size.height * 0.75,
+              color: white,
+              child: PageView.builder(
+                  onPageChanged: (value) {
+                    setState(() {
+                      currentPage = value;
+                    });
+                  },
+                  itemCount: onBoardData.length,
+                  itemBuilder: (context, index) => OnBoardContent(
+                        onBoard: onBoardData[index],
+                      )),
+            ),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                    (route) => false);
+              },
+              child: Container(
+                  height: 50,
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  decoration: BoxDecoration(
+                      color: blue,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: const [
+                        BoxShadow(
+                            offset: Offset(0, 3),
+                            color: blue,
+                            spreadRadius: 0,
+                            blurRadius: 5)
+                      ]),
+                  child: Center(
+                    child: Text(
+                      currentPage == onBoardData.length - 1
+                          ? 'Get Started'
+                          : 'Continue',
+                      style: poppins.copyWith(color: white, fontSize: 16),
+                    ),
+                  )),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ...List.generate(
+                    onBoardData.length, (index) => indicator(index: index))
+              ],
+            )
+          ],
+        ),
       ),
     );
   }
